@@ -60,11 +60,8 @@ int main() {
 		}
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
-
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
-
 		draw_circle((vec2){WIDTH / 2.0, HEIGHT / 2.0}, 30);
-
 		SDL_RenderPresent(renderer);
 	}
 
