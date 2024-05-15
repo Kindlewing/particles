@@ -2,3 +2,7 @@
 bin
 build
 compile_commands.json
+.clang-format
+vgcore.10168
+vgcore.14469
+vgcore.13018

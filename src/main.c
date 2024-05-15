@@ -2,13 +2,16 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 
+#include <locale.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "defs.h"
 
-void draw_particle(SDL_Renderer* renderer, vec2 origin, int radius) {
+void draw_particle(SDL_Renderer *renderer, vec2 origin, int radius) {
 	int x = radius - 1;
 	int y = 0;
 	int dx = 1;
@@ -42,11 +45,11 @@ void draw_particle(SDL_Renderer* renderer, vec2 origin, int radius) {
 int main() {
 	int renderer_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
-	SDL_Window* window;
-	SDL_Renderer* renderer;
+	SDL_Window *window;
+	SDL_Renderer *renderer;
 
 	int num_particles = 400;
-	particle particles[num_particles * sizeof(particle)];
+	particle *particles;
 
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
 		printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -71,18 +74,27 @@ int main() {
 	}
 
 	for(int i = 0; i < num_particles; i++) {
-		particle* p;
+		particle *p = malloc(sizeof(particle));
+		if(p == NULL) {
+			fprintf(stderr, "Could not allocate memory for particle");
+			exit(1);
+		}
 		p->position = (vec2){rand() % WIDTH, rand() % HEIGHT};
 		p->radius = 1;
 		p->mass = rand() % 10;
 		p->velocity = (vec2){0, 0};
+		particles[i] = *p;
 	}
 
 	// main loop
 	int close_requested = 0;
-	while(!close_requested) {
-		double current_frame;
 
+	double dt = 0.000001f;
+	double last_frame_time = SDL_GetTicks();
+	int total_frames = 0;
+	char title[512];
+
+	while(!close_requested) {
 		SDL_Event event;
 
 		while(SDL_PollEvent(&event)) {
@@ -91,6 +103,11 @@ int main() {
 				close_requested = 1;
 				break;
 			}
+		}
+
+		if(total_frames % TARGET_FPS == 0) {
+			sprintf(title, "Particle simulation | FPS : %-4.0f", 1.0 / dt);
+			SDL_SetWindowTitle(window, title);
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
@@ -103,6 +120,17 @@ int main() {
 		}
 
 		SDL_RenderPresent(renderer);
+
+		// timing
+		dt = SDL_GetTicks() - last_frame_time;
+		while(dt < 1.0 / TARGET_FPS) {
+			dt = SDL_GetTicks() - last_frame_time;
+		}
+		last_frame_time = SDL_GetTicks();
+		total_frames++;
+	}
+	for(int i = 0; i < num_particles; i++) {
+		free(particles[i]);
 	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
