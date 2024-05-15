@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+
 #include <SDL2/SDL_video.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,6 +17,13 @@ void draw_circle(SDL_Renderer* renderer, vec2 origin, int radius) {
 
 	while(x >= y) {
 		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y + y);
+		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y + x);
+		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y + x);
+		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y + y);
+		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y - y);
+		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y - x);
+		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y - x);
+		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y - y);
 
 		if(err <= 0) {
 			y++;
@@ -59,10 +67,23 @@ int main() {
 		return -1;
 	}
 
+	double x;
+	double y;
+	int radius = 1;
+	int num_circles = 400;
+
+	vec2 positions[num_circles * sizeof(vec2)];
+	for(int i = 0; i < num_circles; i++) {
+		x = rand() % WIDTH;
+		y = rand() % HEIGHT;
+		positions[i] = (vec2){x - (radius / 2.0), y - (radius / 2.0)};
+	}
+
 	// main loop
 	int close_requested = 0;
 	while(!close_requested) {
 		double current_frame;
+
 		SDL_Event event;
 
 		while(SDL_PollEvent(&event)) {
@@ -78,7 +99,9 @@ int main() {
 
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 		// render stuff
-		draw_circle(renderer, (vec2){WIDTH / 2, HEIGHT / 2}, 50);
+		for(int i = 0; i < num_circles; i++) {
+			draw_circle(renderer, positions[i], radius);
+		}
 
 		SDL_RenderPresent(renderer);
 	}

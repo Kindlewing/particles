@@ -5,6 +5,7 @@ INCLUDE = include
 SRC = src
 CC = gcc
 CFLAGS = -I$(INCLUDE)
+LIBS=-lSDL2
 
 
 # List all source files
@@ -18,7 +19,7 @@ all: $(BIN)/$(TARGET)
 
 # Rule to make the executable
 $(BIN)/$(TARGET): $(OBJS)
-	$(CC) $^ -o $@ `sdl2-config --cflags --libs`
+	$(CC) $^ -o $@ $(LIBS)
 
 # Rule to make object files
 $(BUILD)/%.o: $(SRC)/%.c
