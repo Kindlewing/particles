@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-c",
+      "-o",
+      "build/main.o",
+      "src/main.c"
+    ],
+    "directory": "/home/hudson/development/c/particle_simulation",
+    "file": "/home/hudson/development/c/particle_simulation/src/main.c",
+    "output": "/home/hudson/development/c/particle_simulation/build/main.o"
+  }
+]

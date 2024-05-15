@@ -9,4 +9,11 @@ typedef struct {
 	int y;
 } vec2;
 
+typedef struct {
+	vec2 position;
+	vec2 velocity;
+	double mass;
+	int radius;
+} particle;
+
 #endif // !DEFS_H
