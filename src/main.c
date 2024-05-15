@@ -73,17 +73,14 @@ int main() {
 		return -1;
 	}
 
+	particles = malloc(sizeof(particle) * num_particles);
 	for(int i = 0; i < num_particles; i++) {
-		particle *p = malloc(sizeof(particle));
-		if(p == NULL) {
-			fprintf(stderr, "Could not allocate memory for particle");
-			exit(1);
-		}
-		p->position = (vec2){rand() % WIDTH, rand() % HEIGHT};
-		p->radius = 1;
-		p->mass = rand() % 10;
-		p->velocity = (vec2){0, 0};
-		particles[i] = *p;
+		particle p = {0};
+		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
+		p.radius = 1;
+		p.mass = rand() % 10;
+		p.velocity = (vec2){0, 0};
+		particles[i] = p;
 	}
 
 	// main loop
@@ -129,9 +126,7 @@ int main() {
 		last_frame_time = SDL_GetTicks();
 		total_frames++;
 	}
-	for(int i = 0; i < num_particles; i++) {
-		free(particles[i]);
-	}
+	free(particles);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
