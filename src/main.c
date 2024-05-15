@@ -5,11 +5,9 @@
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 
-#include <locale.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <threads.h>
 #include "defs.h"
 
 void draw_particle(SDL_Renderer *renderer, particle particle) {
@@ -65,23 +63,17 @@ int main() {
 	// main loop
 	int close_requested = 0;
 	char title[128];
-	double prev_frame_time = (double)SDL_GetTicks64();
+	double delta = 0.00001;
+	uint64_t prev_frame_time = SDL_GetTicks64();
 	int frame_count = 0;
 
 	while(!close_requested) {
-		double frame_start = (double)SDL_GetTicks64();
-		double delta = frame_start - prev_frame_time;
-		int fps = 1.0 / delta;
+		SDL_Event event;
 
 		if(frame_count % 60 == 0) {
-			snprintf(title,
-					 sizeof(title),
-					 "Particle simulation | FPS: %d",
-					 fps);
+			snprintf(title, 128, "Particle simulation | FPS: %f", 1.0 / delta);
 			SDL_SetWindowTitle(window, title);
 		}
-
-		SDL_Event event;
 
 		while(SDL_PollEvent(&event)) {
 			switch(event.type) {
@@ -91,13 +83,18 @@ int main() {
 			}
 		}
 
+		delta = SDL_GetTicks64() - prev_frame_time;
+		while(delta < 1.0 / TARGET_FPS) {
+			delta = SDL_GetTicks64() - prev_frame_time;
+		}
+
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 		draw_particle(renderer, particles[4]);
 		SDL_RenderPresent(renderer);
 
-		prev_frame_time = frame_start;
+		prev_frame_time = SDL_GetTicks64();
 		frame_count++;
 	}
 
