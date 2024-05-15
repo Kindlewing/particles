@@ -11,35 +11,8 @@
 #include <stdlib.h>
 #include "defs.h"
 
-void draw_particle(SDL_Renderer *renderer, vec2 origin, int radius) {
-	int x = radius - 1;
-	int y = 0;
-	int dx = 1;
-	int dy = 1;
-	int err = dx - (radius << 1);
-
-	while(x >= y) {
-		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y + y);
-		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y + x);
-		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y + x);
-		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y + y);
-		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y - y);
-		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y - x);
-		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y - x);
-		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y - y);
-
-		if(err <= 0) {
-			y++;
-			err += dy;
-			dy += 2;
-		}
-
-		if(err > 0) {
-			x--;
-			dx += 2;
-			err += dx - (radius << 1);
-		}
-	}
+void draw_particle(SDL_Renderer *renderer, particle particle) {
+	SDL_RenderDrawPoint(renderer, particle.position.x, particle.position.y);
 }
 
 int main() {
@@ -48,7 +21,7 @@ int main() {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
-	int num_particles = 400;
+	int num_particles = 10000;
 	particle *particles;
 
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -88,7 +61,9 @@ int main() {
 
 	double dt = 0.000001f;
 	double last_frame_time = SDL_GetTicks();
+	uint32_t frame_start;
 	int total_frames = 0;
+
 	char title[512];
 
 	while(!close_requested) {
@@ -113,19 +88,19 @@ int main() {
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 		// render stuff
 		for(int i = 0; i < num_particles; i++) {
-			draw_particle(renderer, particles[i].position, particles[i].radius);
+			draw_particle(renderer, particles[i]);
 		}
-
 		SDL_RenderPresent(renderer);
 
 		// timing
-		dt = SDL_GetTicks() - last_frame_time;
+		dt = (SDL_GetTicks() - last_frame_time) / 1000.0;
 		while(dt < 1.0 / TARGET_FPS) {
 			dt = SDL_GetTicks() - last_frame_time;
 		}
 		last_frame_time = SDL_GetTicks();
 		total_frames++;
 	}
+
 	free(particles);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
