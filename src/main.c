@@ -16,13 +16,6 @@ void draw_circle(SDL_Renderer* renderer, vec2 origin, int radius) {
 
 	while(x >= y) {
 		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y + y);
-		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y + x);
-		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y + x);
-		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y + y);
-		SDL_RenderDrawPoint(renderer, origin.x - x, origin.y - y);
-		SDL_RenderDrawPoint(renderer, origin.x - y, origin.y - x);
-		SDL_RenderDrawPoint(renderer, origin.x + y, origin.y - x);
-		SDL_RenderDrawPoint(renderer, origin.x + x, origin.y - y);
 
 		if(err <= 0) {
 			y++;
@@ -85,7 +78,7 @@ int main() {
 
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 		// render stuff
-		draw_circle(renderer, (vec2){50, 50}, 20);
+		draw_circle(renderer, (vec2){WIDTH / 2, HEIGHT / 2}, 50);
 
 		SDL_RenderPresent(renderer);
 	}
