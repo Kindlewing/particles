@@ -15,8 +15,8 @@ void draw_particle(SDL_Renderer *renderer, particle particle) {
 }
 
 void update_particle(particle *particle, double dt) {
-	particle->position.x += dt * 40;
-	particle->position.y += dt * 40;
+	particle->position.x += dt * 20;
+	particle->position.y += dt * 30;
 	if(particle->position.y > HEIGHT) {
 		particle->position.y = HEIGHT / 2;
 	}
@@ -67,7 +67,7 @@ int main() {
 	// main loop
 	int close_requested = 0;
 	char title[128];
-	double delta = 0.00001;
+	double dt = 0.000001;
 	uint64_t prev_frame_time = SDL_GetTicks64();
 	int frame_count = 0;
 
@@ -78,7 +78,7 @@ int main() {
 			snprintf(title,
 					 128,
 					 "Particle simulation | FPS: %d",
-					 (int)(1.0 / delta));
+					 (int)(1.0 / dt));
 			SDL_SetWindowTitle(window, title);
 		}
 
@@ -90,7 +90,7 @@ int main() {
 			}
 		}
 
-		update_particle(&particles[0], delta);
+		update_particle(&particles[0], dt / 1000.0);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
@@ -98,8 +98,10 @@ int main() {
 		draw_particle(renderer, particles[0]);
 		SDL_RenderPresent(renderer);
 
-		uint64_t current_frame_time = SDL_GetTicks64();
-		delta = (current_frame_time - prev_frame_time) / 1000.0;
+		dt = SDL_GetTicks64() - prev_frame_time;
+		while(dt < 1.0f / TARGET_FPS) {
+			dt = SDL_GetTicks64() - prev_frame_time;
+		}
 
 		prev_frame_time = SDL_GetTicks64();
 		frame_count++;
