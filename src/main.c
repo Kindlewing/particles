@@ -16,8 +16,11 @@ void draw_particle(SDL_Renderer *renderer, particle particle) {
 
 void update_particle(particle *particle, double dt) {
 	particle->position.y += dt;
-	if(particle->position.y / 2 > HEIGHT) {
-		particle->position.y = HEIGHT;
+	if(particle->position.y > HEIGHT) {
+		particle->position.y = HEIGHT / 2;
+	}
+	if(particle->position.x > WIDTH) {
+		particle->position.x = WIDTH / 2;
 	}
 }
 
@@ -93,9 +96,6 @@ int main() {
 		uint64_t current_frame_time = SDL_GetTicks64();
 		delta = (current_frame_time - prev_frame_time) / 1000.0;
 
-		if((current_frame_time - prev_frame_time) < FRAME_TIME) {
-			SDL_Delay(FRAME_TIME - (current_frame_time - prev_frame_time));
-		}
 		prev_frame_time = SDL_GetTicks64();
 		frame_count++;
 	}
