@@ -15,7 +15,8 @@ void draw_particle(SDL_Renderer *renderer, particle particle) {
 }
 
 void update_particle(particle *particle, double dt) {
-	particle->position.y += dt;
+	particle->position.x += dt * 40;
+	particle->position.y += dt * 40;
 	if(particle->position.y > HEIGHT) {
 		particle->position.y = HEIGHT / 2;
 	}
@@ -89,8 +90,12 @@ int main() {
 			}
 		}
 
+		update_particle(&particles[0], delta);
+
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
+		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
+		draw_particle(renderer, particles[0]);
 		SDL_RenderPresent(renderer);
 
 		uint64_t current_frame_time = SDL_GetTicks64();
