@@ -8,6 +8,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include "defs.h"
 
 void draw_particle(SDL_Renderer *renderer, particle particle) {
@@ -15,8 +16,8 @@ void draw_particle(SDL_Renderer *renderer, particle particle) {
 }
 
 void update_particle(particle *particle, double dt) {
-	particle->position.x += dt * 20;
-	particle->position.y += dt * 30;
+	particle->position.x += dt * 60;
+	particle->position.y += dt * 60;
 	if(particle->position.y > HEIGHT) {
 		particle->position.y = HEIGHT / 2;
 	}
@@ -67,18 +68,27 @@ int main() {
 	// main loop
 	int close_requested = 0;
 	char title[128];
-	double dt = 0.000001;
-	uint64_t prev_frame_time = SDL_GetTicks64();
-	int frame_count = 0;
+	time time = {0};
+	time.frame_rate = TARGET_FPS;
+	time.frame_delay = 1000.0 / time.frame_rate;
 
 	while(!close_requested) {
 		SDL_Event event;
+		time.now = (float)SDL_GetTicks64();
+		time.delta = (time.now - time.last) / 1000.0;
+		time.last = time.now;
+		time.frame_count++;
+		if(time.now - time.frame_last >= 1000.0) {
+			time.frame_rate = time.frame_count;
+			time.frame_count = 0;
+			time.frame_last = time.now;
+		}
 
-		if(frame_count % 60 == 0) {
+		if(time.frame_count % 60 == 0) {
 			snprintf(title,
 					 128,
 					 "Particle simulation | FPS: %d",
-					 (int)(1.0 / dt));
+					 (int)(1.0 / time.delta));
 			SDL_SetWindowTitle(window, title);
 		}
 
@@ -90,21 +100,13 @@ int main() {
 			}
 		}
 
-		update_particle(&particles[0], dt / 1000.0);
+		update_particle(&particles[0], time.delta);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
 		draw_particle(renderer, particles[0]);
 		SDL_RenderPresent(renderer);
-
-		dt = SDL_GetTicks64() - prev_frame_time;
-		while(dt < 1.0f / TARGET_FPS) {
-			dt = SDL_GetTicks64() - prev_frame_time;
-		}
-
-		prev_frame_time = SDL_GetTicks64();
-		frame_count++;
 	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
