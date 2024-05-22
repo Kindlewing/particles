@@ -4,6 +4,7 @@
 #define WIDTH 1920
 #define HEIGHT 1080
 #define TARGET_FPS 60
+#define FRAME_TIME 1000.0 / TARGET_FPS
 #define PARTICLE_COUNT 100
 
 typedef struct {

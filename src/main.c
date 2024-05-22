@@ -71,7 +71,10 @@ int main() {
 		SDL_Event event;
 
 		if(frame_count % 60 == 0) {
-			snprintf(title, 128, "Particle simulation | FPS: %f", 1.0 / delta);
+			snprintf(title,
+					 128,
+					 "Particle simulation | FPS: %d",
+					 (int)(1.0 / delta));
 			SDL_SetWindowTitle(window, title);
 		}
 
@@ -83,21 +86,19 @@ int main() {
 			}
 		}
 
-		delta = SDL_GetTicks64() - prev_frame_time;
-		while(delta < 1.0 / TARGET_FPS) {
-			delta = SDL_GetTicks64() - prev_frame_time;
-		}
-
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
-		draw_particle(renderer, particles[4]);
 		SDL_RenderPresent(renderer);
 
+		uint64_t current_frame_time = SDL_GetTicks64();
+		delta = (current_frame_time - prev_frame_time) / 1000.0;
+
+		if((current_frame_time - prev_frame_time) < FRAME_TIME) {
+			SDL_Delay(FRAME_TIME - (current_frame_time - prev_frame_time));
+		}
 		prev_frame_time = SDL_GetTicks64();
 		frame_count++;
 	}
-
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

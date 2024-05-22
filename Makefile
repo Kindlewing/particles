@@ -4,7 +4,7 @@ BIN = bin
 INCLUDE = include
 SRC = src
 CC = gcc
-CFLAGS = -I$(INCLUDE) -g -O0
+CFLAGS = -I$(INCLUDE) -g -pg -O0
 LIBS=-lSDL2
 
 
@@ -19,7 +19,7 @@ all: $(BIN)/$(TARGET)
 
 # Rule to make the executable
 $(BIN)/$(TARGET): $(OBJS)
-	$(CC) $^ -o $@ $(LIBS)
+	$(CC) $^ -o $@ -pg $(LIBS)
 
 # Rule to make object files
 $(BUILD)/%.o: $(SRC)/%.c
@@ -27,6 +27,8 @@ $(BUILD)/%.o: $(SRC)/%.c
 
 # Create necessary directories
 $(shell mkdir -p $(BUILD) $(BIN))
+
+
 
 # Clean rule
 clean:
