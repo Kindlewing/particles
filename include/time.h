@@ -7,7 +7,6 @@ typedef struct {
 	float delta;
 	float now;
 	float last;
-
 	float frame_last;
 	float frame_delay;
 	float frame_time;

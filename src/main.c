@@ -11,18 +11,18 @@
 #include <time.h>
 #include "defs.h"
 
-void draw_particle(SDL_Renderer *renderer, particle particle) {
-	SDL_RenderDrawPoint(renderer, particle.position.x, particle.position.y);
+void draw_particles(SDL_Renderer *renderer, SDL_Point *points) {
+	SDL_RenderDrawPoints(renderer, points, PARTICLE_COUNT);
 }
 
 void update_particle(particle *particle, double dt) {
-	particle->position.x += dt * 60;
-	particle->position.y += dt * 60;
-	if(particle->position.y > HEIGHT) {
-		particle->position.y = HEIGHT / 2;
-	}
+	particle->position.x += dt * 40;
+	particle->position.y += dt * 40;
 	if(particle->position.x > WIDTH) {
-		particle->position.x = WIDTH / 2;
+		particle->position.x = rand() % WIDTH;
+	}
+	if(particle->position.y > HEIGHT) {
+		particle->position.y = rand() % HEIGHT;
 	}
 }
 
@@ -32,7 +32,8 @@ int main() {
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
-	particle particles[PARTICLE_COUNT * sizeof(particle)];
+	particle particles[PARTICLE_COUNT];
+	SDL_Point points[PARTICLE_COUNT];
 
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
 		printf("Unable to initialize SDL: %s\n", SDL_GetError());
@@ -63,22 +64,25 @@ int main() {
 		p.mass = rand() % 10;
 		p.velocity = (vec2){0, 0};
 		particles[i] = p;
+		points[i] = (SDL_Point){p.position.x, p.position.y};
 	}
 
 	// main loop
 	int close_requested = 0;
 	char title[128];
 	time time = {0};
+	uint64_t freq = SDL_GetPerformanceFrequency();
 	time.frame_rate = TARGET_FPS;
 	time.frame_delay = 1000.0 / time.frame_rate;
 
 	while(!close_requested) {
 		SDL_Event event;
-		time.now = (float)SDL_GetTicks64();
-		time.delta = (time.now - time.last) / 1000.0;
+		time.now = SDL_GetPerformanceCounter();
+		time.delta = (time.now - time.last) / freq;
 		time.last = time.now;
+		printf("%f\n", time.delta);
 		time.frame_count++;
-		if(time.now - time.frame_last >= 1000.0) {
+		if(time.now - time.frame_last >= freq) {
 			time.frame_rate = time.frame_count;
 			time.frame_count = 0;
 			time.frame_last = time.now;
@@ -87,8 +91,8 @@ int main() {
 		if(time.frame_count % 60 == 0) {
 			snprintf(title,
 					 128,
-					 "Particle simulation | FPS: %d",
-					 (int)(1.0 / time.delta));
+					 "Particle simulation | FPS: %f",
+					 (1.0 / time.delta));
 			SDL_SetWindowTitle(window, title);
 		}
 
@@ -100,12 +104,18 @@ int main() {
 			}
 		}
 
-		update_particle(&particles[0], time.delta);
+		for(int i = 0; i < PARTICLE_COUNT; i++) {
+			update_particle(&particles[i], time.delta);
+			points[i] =
+				(SDL_Point){particles[i].position.x, particles[i].position.y};
+		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
-		draw_particle(renderer, particles[0]);
+
+		draw_particles(renderer, points);
+
 		SDL_RenderPresent(renderer);
 	}
 	SDL_DestroyRenderer(renderer);
