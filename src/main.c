@@ -11,13 +11,9 @@
 #include <time.h>
 #include "defs.h"
 
-void draw_particles(SDL_Renderer *renderer, SDL_Point *points) {
-	SDL_RenderDrawPoints(renderer, points, PARTICLE_COUNT);
-}
-
 void update_particle(particle *particle, double dt) {
-	particle->position.x += dt * 40;
-	particle->position.y += dt * 40;
+	particle->position.x += dt * 400;
+	particle->position.y += dt * 400;
 	if(particle->position.x > WIDTH) {
 		particle->position.x = rand() % WIDTH;
 	}
@@ -71,28 +67,21 @@ int main() {
 	int close_requested = 0;
 	char title[128];
 	time time = {0};
-	uint64_t freq = SDL_GetPerformanceFrequency();
-	time.frame_rate = TARGET_FPS;
-	time.frame_delay = 1000.0 / time.frame_rate;
+	time.frame_count = 0;
+	double freq_inv = 1.0 / (double)SDL_GetPerformanceFrequency();
+	uint64_t last_frame_time = SDL_GetPerformanceCounter();
 
 	while(!close_requested) {
 		SDL_Event event;
-		time.now = SDL_GetPerformanceCounter();
-		time.delta = (time.now - time.last) / freq;
-		time.last = time.now;
-		printf("%f\n", time.delta);
-		time.frame_count++;
-		if(time.now - time.frame_last >= freq) {
-			time.frame_rate = time.frame_count;
-			time.frame_count = 0;
-			time.frame_last = time.now;
-		}
+		uint64_t current_frame_time = SDL_GetPerformanceCounter();
+		time.dt =
+			(float)((double)current_frame_time - last_frame_time) * freq_inv;
 
 		if(time.frame_count % 60 == 0) {
 			snprintf(title,
 					 128,
-					 "Particle simulation | FPS: %f",
-					 (1.0 / time.delta));
+					 "Particle simulation | FPS: %d",
+					 (int)(1.0 / time.dt));
 			SDL_SetWindowTitle(window, title);
 		}
 
@@ -105,18 +94,18 @@ int main() {
 		}
 
 		for(int i = 0; i < PARTICLE_COUNT; i++) {
-			update_particle(&particles[i], time.delta);
-			points[i] =
-				(SDL_Point){particles[i].position.x, particles[i].position.y};
+			update_particle(&particles[i], time.dt);
+			points[i].x = particles[i].position.x;
+			points[i].y = particles[i].position.y;
 		}
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
-
-		draw_particles(renderer, points);
-
+		SDL_RenderDrawPoints(renderer, points, PARTICLE_COUNT);
 		SDL_RenderPresent(renderer);
+		last_frame_time = current_frame_time;
+		time.frame_count++;
 	}
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);

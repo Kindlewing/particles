@@ -3,8 +3,7 @@
 
 #define WIDTH 1920
 #define HEIGHT 1080
-#define PARTICLE_COUNT 100
-#define TARGET_FPS 60
+#define PARTICLE_COUNT 1000
 
 typedef struct {
 	int x;
