@@ -3,6 +3,8 @@
     "arguments": [
       "/usr/bin/gcc",
       "-Iinclude",
+      "-g",
+      "-O0",
       "-c",
       "-o",
       "build/main.o",
@@ -11,5 +13,20 @@
     "directory": "/home/hudson/development/c/particle_simulation",
     "file": "/home/hudson/development/c/particle_simulation/src/main.c",
     "output": "/home/hudson/development/c/particle_simulation/build/main.o"
+  },
+  {
+    "arguments": [
+      "/usr/bin/gcc",
+      "-Iinclude",
+      "-g",
+      "-O0",
+      "-c",
+      "-o",
+      "build/vec_math.o",
+      "src/vec_math.c"
+    ],
+    "directory": "/home/hudson/development/c/particle_simulation",
+    "file": "/home/hudson/development/c/particle_simulation/src/vec_math.c",
+    "output": "/home/hudson/development/c/particle_simulation/build/vec_math.o"
   }
 ]

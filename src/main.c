@@ -10,26 +10,18 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include "stime.h"
+#include "physics.h"
 #include "defs.h"
 
-void update_particle(particle *particle, double dt) {
-	particle->position.x += particle->velocity.x * dt;
-	particle->position.y += particle->velocity.y * 400 * dt;
-	if(particle->position.x > WIDTH) {
-		particle->position.x = rand() % WIDTH;
-	}
-	if(particle->position.y > HEIGHT) {
-		particle->position.y = rand() % HEIGHT;
-	}
-}
-
 int main() {
+	srand(time(0));
 	int renderer_flags = SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC;
 
 	SDL_Window *window;
 	SDL_Renderer *renderer;
 
-	particle particles[PARTICLE_COUNT];
+	particle *particles;
 	SDL_Point points[PARTICLE_COUNT];
 
 	if(SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0) {
@@ -55,10 +47,12 @@ int main() {
 		return -1;
 	}
 
+	particles = malloc(PARTICLE_COUNT * sizeof(particle));
 	for(int i = 0; i < PARTICLE_COUNT; i++) {
 		particle p = {0};
-		p.position = (vec2){rand() % WIDTH, random() % HEIGHT};
-		p.mass = rand() % 10;
+		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
+		p.mass = rand() % 100;
+		p.id = i;
 		p.velocity = (vec2){drand48(), drand48()};
 		particles[i] = p;
 		points[i] = (SDL_Point){p.position.x, p.position.y};
@@ -67,7 +61,7 @@ int main() {
 	// main loop
 	int close_requested = 0;
 	char title[128];
-	time time = {0};
+	stime time = {0};
 	time.frame_count = 0;
 	double freq_inv = 1.0 / (double)SDL_GetPerformanceFrequency();
 	uint64_t last_frame_time = SDL_GetPerformanceCounter();
@@ -94,11 +88,7 @@ int main() {
 			}
 		}
 
-		for(int i = 0; i < PARTICLE_COUNT; i++) {
-			update_particle(&particles[i], time.dt);
-			points[i].x = particles[i].position.x;
-			points[i].y = particles[i].position.y;
-		}
+		update(particles, time.dt);
 
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
@@ -108,6 +98,7 @@ int main() {
 		last_frame_time = current_frame_time;
 		time.frame_count++;
 	}
+	free(particles);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();

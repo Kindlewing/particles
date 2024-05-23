@@ -4,7 +4,7 @@ BIN = bin
 INCLUDE = include
 SRC = src
 CC = gcc
-CFLAGS = -I$(INCLUDE) -g -pg -O0
+CFLAGS = -I$(INCLUDE) -g -O0
 LIBS=-lSDL2 -lm
 
 
