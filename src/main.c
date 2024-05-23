@@ -57,7 +57,7 @@ int main() {
 
 	for(int i = 0; i < PARTICLE_COUNT; i++) {
 		particle p = {0};
-		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
+		p.position = (vec2){rand() % WIDTH, random() % HEIGHT};
 		p.mass = rand() % 10;
 		p.velocity = (vec2){drand48(), drand48()};
 		particles[i] = p;
