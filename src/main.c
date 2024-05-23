@@ -2,6 +2,7 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_rect.h>
 #include <SDL2/SDL_render.h>
+#include <SDL2/SDL_stdinc.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_video.h>
 
@@ -12,8 +13,8 @@
 #include "defs.h"
 
 void update_particle(particle *particle, double dt) {
-	particle->position.x += dt * 400;
-	particle->position.y += dt * 400;
+	particle->position.x += particle->velocity.x * dt;
+	particle->position.y += particle->velocity.y * 400 * dt;
 	if(particle->position.x > WIDTH) {
 		particle->position.x = rand() % WIDTH;
 	}
@@ -40,8 +41,9 @@ int main() {
 							  SDL_WINDOWPOS_CENTERED,
 							  WIDTH,
 							  HEIGHT,
-							  0);
+							  SDL_WINDOW_FULLSCREEN);
 	renderer = SDL_CreateRenderer(window, -1, renderer_flags);
+
 	if(window == NULL) {
 		printf("Error creating window");
 		SDL_Quit();
@@ -56,9 +58,8 @@ int main() {
 	for(int i = 0; i < PARTICLE_COUNT; i++) {
 		particle p = {0};
 		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
-		p.radius = 1;
 		p.mass = rand() % 10;
-		p.velocity = (vec2){0, 0};
+		p.velocity = (vec2){drand48(), drand48()};
 		particles[i] = p;
 		points[i] = (SDL_Point){p.position.x, p.position.y};
 	}
@@ -89,7 +90,7 @@ int main() {
 			switch(event.type) {
 			case SDL_QUIT:
 				close_requested = 1;
-				break;
+				continue;
 			}
 		}
 

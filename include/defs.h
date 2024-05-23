@@ -1,20 +1,20 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define WIDTH 1920
-#define HEIGHT 1080
-#define PARTICLE_COUNT 1000
+#define WIDTH 3440
+#define HEIGHT 1440
+#define TARGET_FPS 60
+#define PARTICLE_COUNT 10
 
 typedef struct {
-	int x;
-	int y;
+	double x;
+	double y;
 } vec2;
 
 typedef struct {
 	vec2 position;
 	vec2 velocity;
 	double mass;
-	int radius;
 } particle;
 
 #endif // !DEFS_H

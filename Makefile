@@ -5,7 +5,7 @@ INCLUDE = include
 SRC = src
 CC = gcc
 CFLAGS = -I$(INCLUDE) -g -pg -O0
-LIBS=-lSDL2
+LIBS=-lSDL2 -lm
 
 
 # List all source files
