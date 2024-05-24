@@ -51,9 +51,8 @@ int main() {
 	for(int i = 0; i < PARTICLE_COUNT; i++) {
 		particle p = {0};
 		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
-		p.mass = rand() % 100;
+		p.mass = 100000;
 		p.id = i;
-		p.velocity = (vec2){drand48(), drand48()};
 		particles[i] = p;
 		points[i] = (SDL_Point){p.position.x, p.position.y};
 	}
@@ -88,8 +87,7 @@ int main() {
 			}
 		}
 
-		update(particles, time.dt);
-
+		update(particles, points, time.dt);
 		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 1);
 		SDL_RenderClear(renderer);
 		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 1);
