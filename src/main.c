@@ -51,8 +51,9 @@ int main() {
 	for(int i = 0; i < PARTICLE_COUNT; i++) {
 		particle p = {0};
 		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
-		p.mass = 100000;
+		p.mass = rand() % 100000;
 		p.id = i;
+		p.velocity = (vec2){drand48(), drand48()};
 		particles[i] = p;
 		points[i] = (SDL_Point){p.position.x, p.position.y};
 	}

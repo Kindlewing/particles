@@ -1,26 +1,30 @@
-#include "vec_math.h"
+
 #include <math.h>
+#include "vec_math.h"
 
-vec2 multiply(vec2 x, vec2 y) {
-	return (vec2){x.x * y.x, x.y * y.y};
+vec2 sub(vec2 a, vec2 b) {
+	vec2 result = {a.x - b.x, a.y - b.y};
+	return result;
 }
 
-vec2 mult_scaler(vec2 v, double scaler) {
-	return (vec2){v.x * scaler, v.y * scaler};
+double distance(vec2 a, vec2 b) {
+	return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
-vec2 add(vec2 x, vec2 y) {
-	return (vec2){x.x + y.x, x.y + y.y};
-}
-vec2 sub(vec2 x, vec2 y) {
-	return (vec2){x.x - y.x, x.y - y.y};
-}
-
-vec2 normalize(vec2 x) {
-	double m = sqrt(x.x * x.x + x.y * x.y);
-	return (vec2){x.x / m, x.y / m};
+vec2 normalize(vec2 v) {
+	double len = sqrt(v.x * v.x + v.y * v.y);
+	if(len > EPSILON) {
+		v.x /= len;
+		v.y /= len;
+	}
+	return v;
 }
 
-double magnitude(vec2 x) {
-	return sqrt(x.x * x.x + x.y * x.y);
+double sqr_magnitude(vec2 v) {
+	return v.x * v.x + v.y * v.y;
+}
+
+vec2 mult_scaler(vec2 v, double s) {
+	vec2 result = {v.x * s, v.y * s};
+	return result;
 }
