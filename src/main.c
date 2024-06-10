@@ -53,7 +53,7 @@ int main() {
 		p.position = (vec2){rand() % WIDTH, rand() % HEIGHT};
 		p.mass = rand() % 100000;
 		p.id = i;
-		p.velocity = (vec2){drand48(), drand48()};
+		p.velocity = (vec2){rand() % 100, rand() % 100};
 		particles[i] = p;
 		points[i] = (SDL_Point){p.position.x, p.position.y};
 	}
@@ -97,7 +97,6 @@ int main() {
 		last_frame_time = current_frame_time;
 		time.frame_count++;
 	}
-	free(particles);
 	SDL_DestroyRenderer(renderer);
 	SDL_DestroyWindow(window);
 	SDL_Quit();
